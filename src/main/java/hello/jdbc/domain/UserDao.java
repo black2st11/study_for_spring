@@ -2,12 +2,15 @@ package hello.jdbc.domain;
 
 import java.sql.*;
 
-import static hello.jdbc.connection.ConnectionConst.*;
+public class UserDao {
+    private ConnectionMaker connectionMaker;
 
-public class UserDAO {
+    public UserDao(ConnectionMaker connectionMaker) {
+        this.connectionMaker = connectionMaker;
+    }
 
     public void add(User user) throws SQLException {
-        Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        Connection con = connectionMaker.makeConnection();
         PreparedStatement ps = con.prepareStatement("insert into users(id, name, password) values (?,?,?)");
         ps.setString(1, user.getId());
         ps.setString(2, user.getName());
@@ -20,7 +23,7 @@ public class UserDAO {
     }
 
     public User get(String id) throws SQLException {
-        Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        Connection con = connectionMaker.makeConnection();
         PreparedStatement ps = con.prepareStatement("select * from users where id = ?");
         ps.setString(1, id);
 
@@ -35,5 +38,7 @@ public class UserDAO {
         ps.close();
         con.close();
 
-        return user;    }
+        return user;
+    }
+
 }
